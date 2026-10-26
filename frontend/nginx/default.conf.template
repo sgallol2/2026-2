@@ -1,6 +1,16 @@
 server {
   listen ${NGINX_PORT};
 
+  # Resolver DNS interno de la VPC (172.16.0.2)
+  resolver 172.16.0.2 valid=10s ipv6=off;
+
+  # Health check directo para el Target Group del Public ALB
+  location /health {
+    access_log off;
+    return 200 "healthy\n";
+    add_header Content-Type text/plain;
+  }
+
   location / {
     root /usr/share/nginx/html/;
     include /etc/nginx/mime.types;
@@ -8,7 +18,8 @@ server {
   }
 
   location ${API_PROXY_PREFIX}/ {
-    proxy_pass ${PROXY_PASS};
+    set $backend_upstream ${PROXY_PASS};
+    proxy_pass $backend_upstream;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
@@ -16,3 +27,4 @@ server {
     proxy_set_header X-Forwarded-Proto $scheme;
   }
 }
+

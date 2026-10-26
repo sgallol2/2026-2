@@ -21,5 +21,6 @@ RUN mkdir -p /usr/src/app/logs \
 # Run the application as a non-root user
 USER node
 
-# Execute the start script defined in package.json
-CMD ["npm", "start"]
+# Execute the server directly with Node so SIGTERM is handled gracefully
+CMD ["node", "server.js"]
+

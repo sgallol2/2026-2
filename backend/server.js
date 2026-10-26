@@ -64,9 +64,10 @@ const startServer = async () => {
   await verifyDatabaseConnection();
   await initializeClickstreamFileWriter();
 
-  server = app.listen(config.app.port, () => {
+  server = app.listen(config.app.port, "0.0.0.0", () => {
     logger.info("HTTP server started", { port: config.app.port });
   });
+
 };
 
 const shutdown = async (signal) => {
