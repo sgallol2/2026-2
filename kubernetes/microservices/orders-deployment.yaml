@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-service
+  labels:
+    app: orders-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: orders-service
+  template:
+    metadata:
+      labels:
+        app: orders-service
+    spec:
+      containers:
+        - name: orders-service
+          image: 683090163663.dkr.ecr.us-east-1.amazonaws.com/bookstore-orders-service:v1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5003
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "5003"
+            - name: SERVICE_NAME
+              value: "orders-service"
+            - name: API_BASE_PATH
+              value: "/api/v1"
+            - name: CATALOG_SERVICE_URL
+              value: "http://catalog-service:5002"
+            - name: DB_HOST
+              value: "bookstore-db.chyea5r4ut1k.us-east-1.rds.amazonaws.com"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: "bookstore"
+            - name: APP_DB_USER
+              value: "bookstore_app"
+            - name: APP_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bookstore-db-secret
+                  key: password
+                  optional: true
+            - name: AUTH_JWT_SECRET
+              value: "4voFHxYerDe9+xENq1vgmNucC8c6iCJGNt48EJgnxlw="
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5003
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5003
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-service
+  labels:
+    app: orders-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5003
+      targetPort: 5003
+      protocol: TCP
+      name: http
+  selector:
+    app: orders-service
+

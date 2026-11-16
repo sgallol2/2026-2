@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  labels:
+    app: auth-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: 683090163663.dkr.ecr.us-east-1.amazonaws.com/bookstore-auth-service:v1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5001
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "5001"
+            - name: SERVICE_NAME
+              value: "auth-service"
+            - name: API_BASE_PATH
+              value: "/api/v1"
+            - name: DB_HOST
+              value: "bookstore-db.chyea5r4ut1k.us-east-1.rds.amazonaws.com"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: "bookstore"
+            - name: APP_DB_USER
+              value: "bookstore_app"
+            - name: APP_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bookstore-db-secret
+                  key: password
+                  optional: true
+            - name: AUTH_JWT_SECRET
+              value: "4voFHxYerDe9+xENq1vgmNucC8c6iCJGNt48EJgnxlw="
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5001
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5001
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  labels:
+    app: auth-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5001
+      targetPort: 5001
+      protocol: TCP
+      name: http
+  selector:
+    app: auth-service
+
