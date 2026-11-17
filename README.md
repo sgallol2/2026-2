@@ -187,22 +187,55 @@ docker buildx imagetools inspect <IMAGE_REGISTRY>/bookstore-backend:<IMAGE_TAG>
 
 La salida debe listar las plataformas `linux/amd64` y `linux/arm64`.
 
-## Despliegue en AWS
+## Despliegue en AWS: Orden de Ejecución (Roadmap)
 
-Docker Compose se usa únicamente para el entorno local. El despliegue en AWS
-reutiliza las mismas imágenes y los mismos nombres de variables
-(`.env.aws.example`), pero se define con las herramientas propias del
-servicio de destino.
-
-Para la inicialización manual de PostgreSQL en Amazon RDS se dispone de:
+Para desplegar la aplicación completa en **AWS Academy Learner Lab** siguiendo la arquitectura de microservicios, ejecuta las guías paso a paso en el siguiente orden secuencial:
 
 ```text
-database/rds/bootstrap.env.example
-database/rds/bootstrap.sh
+┌────────────────────────────────────────────────────────────────────────┐
+│ 1. PREREQS-CLI.md                                                      │
+│    VPC (8 subredes), Security Groups, RDS PostgreSQL y EKS Cluster    │
+└──────────────────────────────────┬─────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ 2. LAB-SIDECAR-CLI.md (Sección 6)                                      │
+│    Bucket S3 Data Lake y Kinesis Firehose Delivery Stream             │
+└──────────────────────────────────┬─────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│ 3. MICROSERVICES-EKS-CLI.md                                            │
+│    Compilación de microservicios, gRPC, Saga en EKS, Ingress ALB,     │
+│    Frontend SPA en S3 y Distribución Amazon CloudFront                │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
-Las instrucciones de configuración y ejecución correspondientes se encuentran
-en las guías de laboratorio.
+### Detalle de cada fase de despliegue:
+
+1. **Paso 1 — Infraestructura Base:**  
+   Sigue **[PREREQS-CLI.md](PREREQS-CLI.md)** para aprovisionar:
+   - VPC Multi-AZ (`bookstore-vpc`) con subredes públicas, privadas y de base de datos.
+   - Internet Gateway y NAT Gateways redundantes.
+   - Security Groups (`backend-sg` y `rds-sg`).
+   - Base de datos relacional **Amazon RDS PostgreSQL** (`bookstore-db`).
+   - Instancia bastión temporal para ejecutar `database/rds/bootstrap.sh` con el esquema [schema.sql](database/schema.sql) y datos iniciales [seed.sql](database/seed.sql).
+   - Clúster gestionado de **Amazon EKS** (`my-cluster`) con 2 nodos `t3.medium`.
+
+2. **Paso 2 — Infraestructura de Streaming y Data Lake:**  
+   Sigue la **Sección 6** de **[LAB-SIDECAR-CLI.md](LAB-SIDECAR-CLI.md)** para aprovisionar:
+   - Bucket **Amazon S3** para el Data Lake de clickstream (`bookstore-clickstream-datalake-...`).
+   - Delivery Stream de **Amazon Kinesis Data Firehose** (`bookstore-clickstream-stream`) con compresión GZIP y particionado temporal.
+
+3. **Paso 3 — Microservicios en EKS, gRPC, Saga y CloudFront:**  
+   Sigue **[MICROSERVICES-EKS-CLI.md](MICROSERVICES-EKS-CLI.md)** para desplegar:
+   - Repositorios en **Amazon ECR** y publicación de imágenes Docker para los 4 microservicios (`auth`, `catalog`, `orders`, `analytics`).
+   - Despliegue de `ConfigMap` y `Secret` en Kubernetes.
+   - Despliegue de los Pods y Services en EKS con comunicación interna **gRPC** (puerto `50052`) y orquestación distribuida con el **Patrón Saga**.
+   - Despliegue del contenedor Sidecar **Fluent Bit** en el Pod de analítica.
+   - Despliegue del Frontend SPA compilado en **Amazon S3** y distribución global unificada con **Amazon CloudFront**.
+
+Para más detalles sobre las decisiones de diseño y consideraciones de costos en AWS Academy, consulta la **[PROPUESTA_MICROSERVICIOS_EKS.md](PROPUESTA_MICROSERVICIOS_EKS.md)**.
 
 ## Requisitos
 
