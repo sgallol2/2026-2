@@ -2,9 +2,9 @@
 # Compila las 4 imágenes Docker de microservicios, las sube a Amazon ECR y aplica los manifiestos en EKS
 
 param (
-    [string]$AccountId = "683090163663",
+    [string]$AccountId = "463834454386",
     [string]$Region = "us-east-1",
-    [string]$Tag = "v1.0"
+    [string]$Tag = "8.1.0"
 )
 
 $ErrorActionPreference = "Stop"

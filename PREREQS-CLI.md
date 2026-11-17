@@ -280,6 +280,10 @@ set SG_RDS=<PEGA_AQUI>
 aws ec2 authorize-security-group-ingress --group-id %SG_RDS% --protocol tcp --port 5432 --source-group %SG_BACKEND%
 ```
 
+```cmd
+aws ec2 authorize-security-group-ingress --group-id %SG_RDS% --protocol tcp --port 5432 --cidr 172.16.0.0/16
+```
+
 ---
 
 ## RECURSO 2: Base de Datos Amazon RDS PostgreSQL
