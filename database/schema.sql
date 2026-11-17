@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS orders (
   order_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   customer_id UUID NOT NULL REFERENCES customers(customer_id) ON DELETE RESTRICT,
   order_status VARCHAR(40) NOT NULL
-    CHECK (order_status IN ('PLACED', 'COMPLETED', 'CANCELLED')),
+    CHECK (order_status IN ('PENDING', 'PLACED', 'COMPLETED', 'CANCELLED')),
   total_amount NUMERIC(12, 2) NOT NULL CHECK (total_amount >= 0),
   order_timestamp TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
