@@ -29,6 +29,8 @@ spec:
               value: "orders-service"
             - name: API_BASE_PATH
               value: "/api/v1"
+            - name: CATALOG_GRPC_URL
+              value: "catalog-service:50052"
             - name: CATALOG_SERVICE_URL
               value: "http://catalog-service:5002"
             - name: DB_HOST

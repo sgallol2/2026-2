@@ -6,7 +6,7 @@ import { logger } from "../shared/logger.js";
 import { errorHandler, notFoundHandler } from "../shared/errorHandler.js";
 import { createDatabasePool } from "../shared/database.js";
 import { sessionContext } from "./src/middleware/sessionContext.js";
-import { createCatalogClient } from "./src/clients/catalogClient.js";
+import { createCatalogGrpcClient } from "./src/clients/catalogGrpcClient.js";
 import { createOrderRepository } from "./src/repositories/orderRepository.js";
 import { createSagaOrchestrator } from "./src/services/sagaOrchestrator.js";
 import { createOrderController } from "./src/controllers/orderController.js";
@@ -15,7 +15,8 @@ import { createOrderRoutes } from "./src/routes/orderRoutes.js";
 const app = express();
 const db = createDatabasePool(config);
 
-const catalogClient = createCatalogClient(config.services.catalogServiceUrl);
+// Cliente gRPC para comunicarse con catalog-service (Tráfico East-West en EKS)
+const catalogClient = createCatalogGrpcClient(config.services.catalogGrpcUrl);
 const orderRepo = createOrderRepository(db.pool);
 const sagaOrchestrator = createSagaOrchestrator({
   orderRepo,

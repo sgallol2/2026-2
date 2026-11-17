@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package bookstore.stock;
+
+service StockService {
+  // Transacción local de la Saga (T2): Reserva inventario para una orden
+  rpc ReserveStock (ReserveStockRequest) returns (ReserveStockResponse);
+
+  // Acción Compensatoria de la Saga (C2): Libera inventario si la orden se cancela
+  rpc ReleaseStock (ReleaseStockRequest) returns (ReleaseStockResponse);
+}
+
+message OrderItem {
+  string book_id = 1;
+  int32 quantity = 2;
+}
+
+message ReserveStockRequest {
+  string order_id = 1;
+  repeated OrderItem items = 2;
+}
+
+message ReservedItem {
+  string book_id = 1;
+  int32 quantity = 2;
+  int32 remaining_stock = 3;
+}
+
+message ReserveStockResponse {
+  bool success = 1;
+  string order_id = 2;
+  string message = 3;
+  repeated ReservedItem reserved_items = 4;
+}
+
+message ReleaseStockRequest {
+  string order_id = 1;
+  repeated OrderItem items = 2;
+}
+
+message ReleaseStockResponse {
+  bool success = 1;
+  string order_id = 2;
+  string message = 3;
+  int32 released_count = 4;
+}
+

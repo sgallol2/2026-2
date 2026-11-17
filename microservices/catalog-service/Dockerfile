@@ -10,7 +10,7 @@ RUN npm install --omit=dev
 
 COPY microservices/catalog-service ./
 
-EXPOSE 5002
+EXPOSE 5002 50052
 
 USER node
 

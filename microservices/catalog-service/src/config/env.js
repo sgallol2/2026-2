@@ -17,6 +17,7 @@ export const config = {
   app: {
     serviceName: process.env.SERVICE_NAME || "catalog-service",
     port: parsePositiveInteger("PORT", 5002),
+    grpcPort: parsePositiveInteger("GRPC_PORT", 50052),
     corsOrigins: (process.env.CORS_ORIGINS || "*").split(",").map((s) => s.trim()),
     apiBasePath: process.env.API_BASE_PATH || "/api/v1",
   },

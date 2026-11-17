@@ -37,7 +37,8 @@ export const config = {
     maxQuantityPerItem: parsePositiveInteger("ORDERS_MAX_QUANTITY_PER_ITEM", 1000),
   },
   services: {
-    // URL del K8s Service del catálogo vía CoreDNS
+    // URL del K8s Service del catálogo vía gRPC (East-West traffic)
+    catalogGrpcUrl: process.env.CATALOG_GRPC_URL || "catalog-service:50052",
     catalogServiceUrl: process.env.CATALOG_SERVICE_URL || "http://catalog-service:5002",
   },
   auth: {

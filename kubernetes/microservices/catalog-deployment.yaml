@@ -20,11 +20,16 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5002
+              name: http
+            - containerPort: 50052
+              name: grpc
           env:
             - name: NODE_ENV
               value: "production"
             - name: PORT
               value: "5002"
+            - name: GRPC_PORT
+              value: "50052"
             - name: SERVICE_NAME
               value: "catalog-service"
             - name: API_BASE_PATH
@@ -76,6 +81,10 @@ spec:
       targetPort: 5002
       protocol: TCP
       name: http
+    - port: 50052
+      targetPort: 50052
+      protocol: TCP
+      name: grpc
   selector:
     app: catalog-service
 

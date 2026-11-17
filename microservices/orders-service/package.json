@@ -8,6 +8,8 @@
     "dev": "node --watch server.js"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.12.5",
+    "@grpc/proto-loader": "^0.7.13",
     "cookie": "0.7.2",
     "cors": "2.8.5",
     "dotenv": "17.2.3",
@@ -19,4 +21,3 @@
     "node": ">=20.0.0"
   }
 }
-
