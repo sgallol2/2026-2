@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: catalog-service
-          image: 683090163663.dkr.ecr.us-east-1.amazonaws.com/bookstore-catalog-service:v1.0
+          image: 463834454386.dkr.ecr.us-east-1.amazonaws.com/bookstore-catalog-service:8.1.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5002
@@ -35,7 +35,7 @@ spec:
             - name: API_BASE_PATH
               value: "/api/v1"
             - name: DB_HOST
-              value: "bookstore-db.chyea5r4ut1k.us-east-1.rds.amazonaws.com"
+              value: "bookstore-db.ceuzfwveolu9.us-east-1.rds.amazonaws.com"
             - name: DB_PORT
               value: "5432"
             - name: DB_NAME

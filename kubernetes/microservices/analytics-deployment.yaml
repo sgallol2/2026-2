@@ -60,7 +60,7 @@ spec:
             name: analytics-fluent-bit-config
       containers:
         - name: analytics-service
-          image: 683090163663.dkr.ecr.us-east-1.amazonaws.com/bookstore-analytics-service:v1.0
+          image: 463834454386.dkr.ecr.us-east-1.amazonaws.com/bookstore-analytics-service:8.1.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5004
